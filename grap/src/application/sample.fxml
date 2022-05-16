@@ -2,15 +2,18 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 
-<SplitPane dividerPositions="0.16277128547579298" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+<SplitPane dividerPositions="0.15704272363150865" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="593.0" prefWidth="192.0">
          <children>
@@ -28,14 +31,33 @@
                   		<RadioButton fx:id="circle" mnemonicParsing="false" onAction="#setShape" prefHeight="17.0" prefWidth="162.0" text="Circle" toggleGroup="$shapes" />
                   		<Separator prefWidth="200.0" />
                   		<RadioButton fx:id="triangle" mnemonicParsing="false" onAction="#setShape" prefHeight="17.0" prefWidth="170.0" text="Triangle" toggleGroup="$shapes" />
+               <Separator prefWidth="200.0" />
+               <RadioButton fx:id="drawPencil" mnemonicParsing="false" onAction="#pencilTool" prefHeight="18.0" prefWidth="199.0" text="Pencil">
+                  <toggleGroup>
+                     <ToggleGroup fx:id="tools" />
+                  </toggleGroup></RadioButton>
+               <Separator prefWidth="200.0" />
+               <RadioButton fx:id="eraserPencil" mnemonicParsing="false" onAction="#pencilTool" text="Eraser" toggleGroup="$tools" />
+               <Separator prefWidth="200.0" />
+               <RadioButton fx:id="noTool" mnemonicParsing="false" selected="true" text="No Tool" toggleGroup="$tools" />
             	</VBox>
-            <Button fx:id="create" layoutY="692.0" mnemonicParsing="false" onAction="#createShape" prefHeight="25.0" prefWidth="192.0" text="Create" />
-            <ColorPicker fx:id="colorPicker" layoutY="64.0" prefHeight="25.0" prefWidth="192.0" promptText="Shape Color" />
+            <Button fx:id="create" layoutY="340.0" mnemonicParsing="false" onAction="#createShape" prefHeight="25.0" prefWidth="192.0" text="Create" />
+            <ColorPicker fx:id="colorPicker" layoutY="169.0" prefHeight="25.0" prefWidth="192.0" promptText="Shape Color">
+               <value>
+                  <Color />
+               </value></ColorPicker>
+            <Label alignment="TOP_CENTER" layoutY="195.0" prefHeight="18.0" prefWidth="192.0" text="Dimensions" textAlignment="CENTER" underline="true" />
+            <Label fx:id="lengthLabel" layoutY="226.0" prefHeight="18.0" prefWidth="42.0" text="Length:" />
+            <Label fx:id="heightLabel" layoutY="262.0" prefHeight="18.0" prefWidth="42.0" text="Height:" />
+            <Label fx:id="CircumferenceLabel" layoutX="2.0" layoutY="296.0" text="Circumference:" />
+            <TextField fx:id="length" alignment="CENTER_RIGHT" layoutX="120.0" layoutY="222.0" prefHeight="26.0" prefWidth="58.0" text="100" />
+            <TextField fx:id="height" alignment="CENTER_RIGHT" layoutX="120.0" layoutY="258.0" prefHeight="26.0" prefWidth="58.0" text="100" />
+            <TextField fx:id="circumference" alignment="CENTER_RIGHT" layoutX="120.0" layoutY="292.0" prefHeight="26.0" prefWidth="58.0" text="100" />
          </children>
       </AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
-            <Pane id="drawCanvas" fx:id="drawCanvas" prefHeight="718.0" prefWidth="1000.0" />
+            <Pane id="drawCanvas" fx:id="drawCanvas" prefHeight="718.0" prefWidth="1074.0" />
          </children></AnchorPane>
   </items>
 </SplitPane>
