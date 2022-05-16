@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -19,9 +21,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 
 public class Controller implements Initializable
@@ -54,6 +53,9 @@ public class Controller implements Initializable
 	{
 		System.out.println("Ready to Draw!");
 		colorPicker.setValue(Color.BLACK);
+		colorSelected = colorPicker.getValue();
+		drawCanvas.setLayoutX(drawCanvas.getWidth());
+		drawCanvas.setLayoutY(drawCanvas.getHeight());
 		colorPicker.setOnAction(new EventHandler() 
 		{
 			@Override
@@ -68,19 +70,51 @@ public class Controller implements Initializable
 	{
 		if(drawPencil.isSelected())
 		{
-			Path path = new Path();
-			path.setStrokeWidth(10);
-			path.setStroke(colorSelected);
 			drawCanvas.setCursor(Cursor.CROSSHAIR);
-			drawCanvas.setOnDragDetected(e -> {
-				path.getElements().add(new MoveTo(e.getX(), e.getY()));
-				path.getElements().add(new LineTo(e.getX(), e.getY()));
-			});
+			Canvas canvas = new Canvas(drawCanvas.getWidth(), drawCanvas.getHeight());
+	        final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+	        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, 
+	                new EventHandler<MouseEvent>(){
+
+	            @Override
+	            public void handle(MouseEvent event) {
+	            	graphicsContext.setFill(colorSelected);
+	            	graphicsContext.setLineWidth(10);
+	                graphicsContext.beginPath();
+	                graphicsContext.moveTo(event.getX(), event.getY());
+	                graphicsContext.stroke();
+	            }
+	        });
+
+	        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, 
+	                new EventHandler<MouseEvent>(){
+
+	            @Override
+	            public void handle(MouseEvent event) {
+	                graphicsContext.lineTo(event.getX(), event.getY());
+	                graphicsContext.stroke();
+	            }
+	        });
+
+	        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, 
+	                new EventHandler<MouseEvent>(){
+
+	            @Override
+	            public void handle(MouseEvent event) {
+
+	            }
+	        });
+	        drawCanvas.getChildren().add(canvas);
 		}
 		
 		if(eraserPencil.isSelected())
 		{
 			drawCanvas.setCursor(Cursor.CROSSHAIR);
+		}
+		
+		if(noTool.isSelected())
+		{
+			drawCanvas.setCursor(Cursor.DEFAULT);
 		}
 	}
 	
@@ -125,7 +159,8 @@ public class Controller implements Initializable
 	{
 		if(shapeToDraw == Shapes.CIRCLE)
 		{
-			Circle circle = new Circle(drawCanvas.getWidth()/2,drawCanvas.getHeight()/2, Double.valueOf(circumference.getText().toString()));
+			Circle circle = new Circle(drawCanvas.getWidth()/2,drawCanvas.getHeight()/2,
+					Double.valueOf(circumference.getText().toString()));
 			circle.setFill(colorSelected);
 			shapes.add(circle);
 			drawCanvas.getChildren().add(circle);
@@ -175,23 +210,38 @@ public class Controller implements Initializable
 					drawCanvas.getChildren().remove(rec);
 				}
 			});
-			
-			rec.setOnMouseDragged(e -> 
-			{
-				if(e.isPrimaryButtonDown())
-				{
-					rec.setLayoutX(e.getSceneX() - mouseAnchorX);
-					rec.setLayoutY(e.getSceneY() - mouseAnchorY);
-				}
-			});
+			class Delta  { double x, y;}
+			final Delta dragDelta = new Delta();
+
+	        rec.setOnMousePressed(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent mouseEvent) {
+	                // record a delta distance for the drag and drop operation.
+	                dragDelta.x = rec.getTranslateX() - mouseEvent.getSceneX();
+	                dragDelta.y = rec.getTranslateY() - mouseEvent.getSceneY();
+	                rec.setCursor(Cursor.OPEN_HAND);
+	            }
+	        });
+	        rec.setOnMouseReleased(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent mouseEvent) {
+	            }
+	        });
+	        rec.setOnMouseDragged(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent mouseEvent) {
+
+	                rec.setTranslateX(mouseEvent.getSceneX() + dragDelta.x);
+	                rec.setTranslateY(mouseEvent.getSceneY() + dragDelta.y);
+	                //checkBounds(rec);
+
+	            }
+	        });
 		}
 		
 		if(shapeToDraw == Shapes.TRIANGLE)
 		{
-			/*GraphicsContext gc = drawCanvas.getGraphicsContext2D();
-			gc.setFill(colorSelected);
-			gc.fillPolygon(new double[]{(drawCanvas.getWidth()/2)-75, (drawCanvas.getWidth()/2), (drawCanvas.getWidth()/2)+75},
-					new double[]{(drawCanvas.getHeight()/2)+90, drawCanvas.getHeight()/2, (drawCanvas.getHeight()/2)+90}, 3);*/
+			
 		}
 	}
 	
